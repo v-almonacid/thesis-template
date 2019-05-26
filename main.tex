@@ -1,0 +1,196 @@
+\pdfobjcompresslevel 0
+\documentclass[12pt,french,english,twoside]{report} % main lang last
+
+% - Place figures in the fig/ folder
+% - Add bibliography in ./mybib.bib
+
+\usepackage[margin=1.0in]{geometry}
+
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{amsmath} % to align multline equations
+%\usepackage[export]{adjustbox}
+\usepackage{amssymb} % xtra math symbols, like \triangleq
+\usepackage{caption}
+\usepackage{subcaption}
+
+% Interlineado
+\usepackage{setspace}
+%\setstretch{1.5}
+
+% Bibtex
+%\usepackage{cite} % use cite with natbib but not with biblatex
+%\usepackage{natbib}
+\usepackage[backend=bibtex,style=alphabetic,url=false,isbn=false,doi=false]{biblatex}
+%\usepackage[style=alphabetic,natbib=true]{biblatex}
+\bibliography{./mybib} % put here in preamble when using biblatex
+% temporary fix for biblatex bug in MacBook
+\makeatletter
+\def\blx@maxline{77}
+\makeatother
+
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{enumerate} % custom lists
+\usepackage{epstopdf} % for working with eps
+\usepackage{gensymb} % for the degree symbol °
+\usepackage{color} % color text
+% nota: titlesec was giving problems in ubuntu (no section numbering). Solution: just remove it since it's not really necesarry.
+% I fixed it following https://tex.stackexchange.com/questions/299969/titlesec-loss-of-section-numbering-with-the-new-update-2016-03-15
+% anyway, titlesec incompatible with minitoc
+%\usepackage{titlesec} % to change the way \paragraph formats the titles
+\usepackage{minitoc} % for table of contents at the beginning of chapter
+\usepackage{quotchap} % for chapter openning quotes
+\usepackage{textcomp} % for copyright symbol
+\usepackage{mathtools} % for matrices
+\usepackage[hidelinks]{hyperref} % for links to sections and url's
+\usepackage{eso-pic} % added to include pdf s background in cover
+\usepackage[]{tocbibind} % Bibliography in ToC (din't work but included LoF and ToC in ToC)
+\usepackage[acronym,nomain,nonumberlist]{glossaries}
+\usepackage[titletoc]{appendix}
+
+% if you need bold vector notation.
+% usage: $\vec{v} =  ...$
+%\renewcommand{\vec}[1]{\mathbf{#1}}
+
+% Define a path for placing figures and diagrams (fig/)
+% note: imges must be in the same folder or subfolders of this file, otherwise
+% pdf2latex will complain
+% ---------------------- %
+\newcommand{\figpath}{./fig}
+
+
+% numbering for paragraphs (to add extra level section)
+% ---------------------- %
+\setcounter{secnumdepth}{3}
+% \titleformat{\paragraph}
+% {\normalfont\normalsize\bfseries}{\theparagraph}{1em}{}
+% \titlespacing*{\paragraph}
+% {0pt}{3.25ex plus 1ex minus .2ex}{1.5ex plus .2ex}
+
+\DeclareMathOperator{\sinc}{sinc}
+
+% pdf background in cover
+\newcommand\BackgroundPic{
+    \put(0,0){
+    \parbox[b][\paperheight]{\paperwidth}{%
+    \vfill
+    \centering
+    \includegraphics[width=\paperwidth,height=\paperheight]{fig/cover_background.pdf}
+    \vfill
+}}}
+
+% to fix section title overflow
+\makeatletter
+\renewcommand\section{\@startsection {section}{1}{\z@}%
+   {-3.5ex \@plus -1ex \@minus -.2ex}%
+   {2.3ex \@plus.2ex}%
+   {\raggedright
+    \normalfont\Large\bfseries}}
+\makeatother
+
+% import acronyms
+% ---------------------- %
+\input{chapters/acronyms}
+
+% selective compilation: this allows us to include only some chapters, and
+% avoid compiling the whole document when we only want to test the rendering
+% of one or a few files
+\includeonly{chapters/cover,chapters/abstract,chapters/intro,chapters/an_interesting_chapter, chapters/some_contributions, chapters/summ,chapters/resume_fr,chapters/derivation_of_magic_theory}
+
+
+% end config
+% -------------------------------------------------------------------------------------- %
+
+% -------------------------------------------------------------------------------------- %
+% Start content
+% -------------------------------------------------------------------------------------- %
+\begin{document}
+
+\pagenumbering{gobble}% Remove page numbers (and reset to 1)
+\clearpage
+\thispagestyle{empty}
+
+% A simple title page
+% ---------------------- %
+% \title{A Fancy Title}
+% \author{Homer Simpsons\\
+% {\small Université de Montpellier}}
+% \date{\today}
+% \AddToShipoutPicture*{\BackgroundPic}
+% \maketitle
+\include{chapters/cover}
+
+% if you own rights of this work...
+\chapter*{}
+{\par\vspace*{\fill}} {\centering © Homer Simpson \par }{\clearpage}
+
+\chapter*{}
+\begin{flushright}
+	\textit{To whoever you want to honour with this dedicatory...}
+\end{flushright}
+
+\chapter*{}
+
+\clearpage
+\pagenumbering{roman}
+
+\newgeometry{inner=2.8cm,outer=1.2cm}
+
+\include{chapters/abstract}
+
+\chapter*{Acknowledgements}
+I want to thank...
+
+\chapter*{}
+
+\dominitoc
+\tableofcontents % uncomment this for main index 
+\listoffigures
+\clearpage
+\printglossary[type=\acronymtype]
+
+\adjustmtc
+
+%\clearpage
+\cleardoublepage % only if two-sided printing style is used
+
+\pagenumbering{arabic}
+\adjustmtc
+
+% Include chapters here
+
+\include{chapters/intro}
+\part{Background}
+
+\include{chapters/an_interesting_chapter}
+
+
+\part{Contributions}
+
+\include{chapters/some_contributions}
+
+\include{chapters/summ}
+
+\include{chapters/resume_fr}
+
+% Bibliography
+
+% ---------------------- %
+% 1. using natbib
+%\bibliographystyle{plain}
+%\bibliography{\bibpath/mybib}
+%
+% 2. uing biblatex
+\printbibliography[heading=bibintoc]
+
+
+% Appendix
+% ---------------------- %
+\appendix
+\begin{appendices} % to use with \usepackage[titletoc]{appendix}
+\include{chapters/derivation_of_magic_theory}
+\end{appendices}
+
+
+\end{document}}
